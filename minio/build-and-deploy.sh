@@ -16,7 +16,8 @@ fi
 # docker push registry.cn-hangzhou.aliyuncs.com/$NAMESPACE/minio:$VERSION
 
 # Build and push docker image
-docker buildx build --push --platform 'linux/amd64' --tag "registry.cn-hangzhou.aliyuncs.com/$NAMESPACE:$VERSION" --file Dockerfile .
+docker buildx create --use
+docker buildx build --push --platform 'linux/amd64' --tag "registry.cn-hangzhou.aliyuncs.com/$NAMESPACE/minio:$VERSION" --file Dockerfile .
 
 # Remove docker image
 docker rmi minio:$VERSION
