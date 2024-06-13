@@ -27,4 +27,4 @@ jobs:
           docker login --username=${{ secrets.DOCKER_USERNAME }} --password=${{ secrets.DOCKER_PASSWORD }} $IMAGE_REGISTRY
           cd minio
           # 使用Dockerfile构建镜像并推送镜像到镜像仓库
-          docker buildx build --push --platform 'linux/amd64' --tag "$IMAGE_REGISTRY/${{ env.GITHUB_ACTOR }}/minio:$IMAGE_TAG" --file Dockerfile .
+          docker buildx build --push --platform 'linux/amd64' --tag "$IMAGE_REGISTRY/${{ secrets.DOCKER_NAMESPACE }}/minio:$IMAGE_TAG" --file Dockerfile .
