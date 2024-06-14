@@ -8,22 +8,27 @@ on:
         required: true
         type: string
 
+env:
+  IMAGE_REGISTRY: registry.cn-hangzhou.aliyuncs.com
+  IMAGE_NAME: aspnet
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - run: |
+      - name: Echo build and push config info
+        run: |
           echo "Image registry: $IMAGE_REGISTRY"
           echo "Image name: $IMAGE_NAME"
           echo "Image tag: $IMAGE_TAG"
         env:
-          IMAGE_REGISTRY: registry.cn-hangzhou.aliyuncs.com
-          IMAGE_NAME: aspnet
+          IMAGE_REGISTRY: ${{ env.IMAGE_REGISTRY }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
           IMAGE_TAG: ${{ inputs.imageTag }}
       - name: Checkout
         uses: actions/checkout@v3
       - name: Login to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.IMAGE_REGISTRY }}
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -36,9 +41,9 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./dotnet/core/aspnet/gdi/Dockerfile
+          file: ./minio/Dockerfile
           platforms: |
             linux/amd64
             linux/arm64
           push: true
-          tags: ${{ env.IMAGE_REGISTRY }}/${{ secrets.DOCKER_NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          tags: ${{ env.IMAGE_REGISTRY }}/${{ secrets.DOCKER_NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ inputs.imageTag }}
