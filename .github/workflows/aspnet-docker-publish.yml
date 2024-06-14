@@ -41,7 +41,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./minio/Dockerfile
+          file: ./dotnet/core/aspnet/gdi/Dockerfile
           platforms: |
             linux/amd64
             linux/arm64
