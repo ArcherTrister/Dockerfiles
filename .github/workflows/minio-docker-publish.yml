@@ -16,11 +16,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - run: |
+      - name: Echo build and push config info
+        run: |
           echo "Image registry: $IMAGE_REGISTRY"
           echo "Image name: $IMAGE_NAME"
           echo "Image tag: $IMAGE_TAG"
         env:
+          IMAGE_REGISTRY: ${{ env.IMAGE_REGISTRY }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
           IMAGE_TAG: ${{ inputs.imageTag }}
       - name: Checkout
         uses: actions/checkout@v3
