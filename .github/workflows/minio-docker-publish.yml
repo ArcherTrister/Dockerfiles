@@ -1,30 +1,44 @@
 name: "Build and push minio Docker image"
 
 on:
-  push:
-    branches: ["*"]
-    tags: ["*"]
-  schedule:
-    - cron: "0 0 * * 0"
+  workflow_dispatch:
+    inputs:
+      imageTag:
+        description: "Image tag"
+        required: true
+        type: string
 
 jobs:
-
-  main:
-    runs-on: "ubuntu-20.04"
+  build:
+    runs-on: ubuntu-latest
     steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v2"
-      - name: "Prepare build environment; build; push to Docker Hub, RedHat Quay"
-        run: |
-          IMAGE_REGISTRY='registry.cn-hangzhou.aliyuncs.com'
-          IMAGE_TAG="20240611"
-
-          docker buildx create --use
-          
-          docker version
-          
-          # 登录阿里云镜像仓库
-          docker login --username=${{ secrets.DOCKER_USERNAME }} --password=${{ secrets.DOCKER_PASSWORD }} $IMAGE_REGISTRY
-          cd minio
-          # 使用Dockerfile构建镜像并推送镜像到镜像仓库
-          docker buildx build --push --platform 'linux/amd64' --tag "$IMAGE_REGISTRY/${{ secrets.DOCKER_NAMESPACE }}/minio:$IMAGE_TAG" --file Dockerfile .
+      - run: |
+          echo "Image registry: $IMAGE_REGISTRY"
+          echo "Image name: $IMAGE_NAME"
+          echo "Image tag: $IMAGE_TAG"
+        env:
+          IMAGE_REGISTRY: registry.cn-hangzhou.aliyuncs.com
+          IMAGE_NAME: minio
+          IMAGE_TAG: ${{ inputs.imageTag }}
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./minio/Dockerfile
+          platforms: |
+            linux/amd64
+            linux/arm64
+          push: true
+          tags: ${{ env.IMAGE_REGISTRY }}/${{ secrets.DOCKER_NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
