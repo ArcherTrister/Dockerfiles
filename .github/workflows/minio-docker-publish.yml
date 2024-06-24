@@ -18,13 +18,13 @@ jobs:
     steps:
       - name: Echo build and push config info
         run: |
-          echo "Image registry: $IMAGE_REGISTRY"
-          echo "Image name: $IMAGE_NAME"
-          echo "Image tag: $IMAGE_TAG"
+          echo "Image registry: $Image_Registry"
+          echo "Image name: $Image_Name"
+          echo "Image tag: $Image_Tag"
         env:
-          IMAGE_REGISTRY: ${{ env.IMAGE_REGISTRY }}
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}
-          IMAGE_TAG: ${{ inputs.imageTag }}
+          Image_Registry: ${{ env.IMAGE_REGISTRY }}
+          Image_Name: ${{ env.IMAGE_NAME }}
+          Image_Tag: ${{ inputs.imageTag }}
       - name: Checkout
         uses: actions/checkout@v3
       - name: Login to Docker Hub
